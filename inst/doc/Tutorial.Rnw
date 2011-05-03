@@ -1,15 +1,21 @@
-%\VignetteIndexEntry{BioNet Tutorial}
 \documentclass[a4paper]{article}
+\newcommand{\obacht}[2][nobody]{\marginpar{\raggedright \tiny \textbf{obacht:} #2 (#1)}}
+% *** OFF
+%\newcommand{\obacht}[2]{}
 
-\usepackage{caption}
-\usepackage{hyperref}
-\usepackage[numbers,sort&compress]{natbib}
+\usepackage{amsmath}%
+\usepackage{amsfonts}%
+\usepackage{amssymb}%
+\usepackage{graphicx}
 \usepackage{xspace}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{caption}
+
+%\VignetteIndexEntry{BioNet Tutorial}
 
 \newcommand{\FDR}{$\mathit{FDR}$\xspace}
 \newcommand{\heinz}{\texttt{heinz}\xspace}
 \newcommand{\BioNet}{\textsf{BioNet}\xspace}
-\newcommand{\obacht}[2][nobody]{\marginpar{\raggedright \tiny \textbf{obacht:} #2 (#1)}}
 
 
 \title{\BioNet Tutorial}
@@ -38,7 +44,7 @@ lymphoma subtypes (ABC and GCB) and simultaneously are risk associated (measured
 
 First of all, we load the \BioNet package and the required data sets, containing a human protein-protein interaction network and 
 p-values derived from differential expression and survival analysis.
-<<echo=FALSE>>=
+<<echo=F>>=
 options(width=60)
 ps.options(family="sans")
 @
@@ -86,7 +92,7 @@ Both 2D and 3D module visualization procedures are available in \BioNet. For a 3
 Alternatively, the network could be easily exported in Cytoscape format, see section \ref{sec:mss2}.   
 
 \begin{center}
-<<fig=TRUE>>=
+<<fig=T>>=
 plotModule(module, scores=scores, diff.expr=logFC)
 @
 \captionof{figure}{Resultant functional module. Differential expression between ABC and GCB B-cell lymphoma is coloured in red and green, where green shows an upregulation in ACB and red an upregulation in GBC. 
@@ -203,7 +209,7 @@ The result looks as follows:\\
 \footnotesize
 
 \begin{center}
-<<echo=FALSE, results=tex>>= 
+<<echo=F, results=tex>>= 
 library(xtable)
 top.table <- xtable(t.test[1:10,], display=c("s", "f", "f", "f"))
 print(top.table, floating=FALSE)                                    
@@ -243,12 +249,15 @@ fb <- fitBumModel(pval, plot=FALSE)
 fb   
 @
 \begin{center}
-<<bum1, fig=TRUE, include=FALSE, height=4, width=8>>=
+<<fig=F>>=
+dev.new(width=13, height=7)
 par(mfrow=c(1,2))
 hist(fb)
 plot(fb)
+
+dev.off()
 @
-\includegraphics[width=\textwidth]{Tutorial-bum1.pdf}
+\includegraphics[width=\textwidth]{bum1.pdf}
 \captionof{figure}{Histogram of p-values, overlayed by the fitted BUM model coloured in red and the $\pi$-upper bound displayed as a blue line. The right plot shows a 
 quantile-quantile plot, indicating a nice fit of the BUM model to the p-value distribution.}
 \label{fig:hist_lymphoma}
@@ -261,7 +270,7 @@ the Beta-uniform mixture model. The circle in the plot depicts the maximum-likel
 estimates for $\lambda$ and a. 
 
 \begin{center}
-<<fig=TRUE>>=
+<<fig=T>>=
 plotLLSurface(pval, fb)
 @
 \captionof{figure}{Log-likelihood surface plot. The range of the colours shows an increased log-likelihood 
@@ -313,7 +322,7 @@ diff <- t.test[, "dm"]
 names(diff) <- rownames(t.test) 
 @
 \begin{center}
-<<fig=TRUE>>=
+<<fig=T>>=
 plotModule(module, diff.expr=diff, scores=scores)
 @
 \captionof{figure}{Resultant functional module for the lymphoma data set. Differential expression between ABC and GCB B-cell lymphoma is coloured 
@@ -455,12 +464,14 @@ fb <- fitBumModel(pval, plot=FALSE)
 fb
 @
 \begin{center}
-<<bum2, fig=TRUE, include=FALSE, height=4, width=8>>=
+<<fig=F>>=
+dev.new(width=13, height=7)
 par(mfrow=c(1,2))
 hist(fb)
 plot(fb)
 @
-\includegraphics[width=\textwidth]{Tutorial-bum2.pdf}
+
+\includegraphics[width=\textwidth]{bum2.pdf}
 \captionof{figure}{Histogram of p-values, overlayed by the fitted BUM model in red and the $\pi$-upper bound displayed as a blue line. The right plot shows a 
 quantile-quantile plot, in which the estimated p-values from the model fit deviate slightly from the observed p-values.}
 \label{fig:Hist_ALL}
@@ -542,7 +553,7 @@ resulting module, as this contrast was used for the test of differential express
 
 \subsection{The \BioNet package}
 The \BioNet package is freely available from Bioconductor at \\
-\url{http://www.bioconductor.org}.
+http://www.bioconductor.org.
 
 \subsection{External code to call CPLEX}
 The algorithm to identify the optimal scoring subnetwork is based on the software dhea (district heating) from
@@ -551,7 +562,7 @@ suboptimal solutions and is controlled over a Python script. The dhea code uses 
 CPLEX callable library version 9.030 by ILOG, Inc. (Sunnyvale,CA). 
 In order to calculate the optimal solution a CPLEX library is needed. The other routines, the dhea code and heinz.py Python script (current version 1.63) are
 publicly available for academic and research purposes within the heinz (heaviest induced subgraph) package of the open source library
-LiSA (\url{http://www.planet-lisa.net}).
+LiSA (http://www.planet-lisa.net).
 The dhea code has to be included in the same folder as heinz.py, in order to call the routine by the Python code.
 To calculate the maximum-scoring subnetwork without an available CPLEX license a heuristic is included in the \BioNet package, see \texttt{runFastHeinz}.
 
@@ -559,3 +570,8 @@ To calculate the maximum-scoring subnetwork without an available CPLEX license a
 \bibliography{Tutorials}
 
 \end{document}
+
+
+
+
+

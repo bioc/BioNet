@@ -74,7 +74,7 @@ plotModule <- function(network, layout=layout.fruchterman.reingold, labels=NULL,
   }
   if(is.null(V(network)$name))
   {
-    V(network)$name <- seq(from=1, to=length(V(network)))
+    V(network)$name <- as.character(V(network))
   }  
   if(is.null(labels))
   {

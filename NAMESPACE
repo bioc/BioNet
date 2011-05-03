@@ -1,7 +1,5 @@
 import(igraph)
-importMethodsFrom(XML, addAttributes, saveXML)
-importFrom(XML, append.xmlNode, xmlNode)
-importFrom(AnnotationDbi, mget)
+import(AnnotationDbi)
 
 # I/O functions
 export(saveNetwork, loadNetwork.sif, loadNetwork.tab) 

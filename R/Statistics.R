@@ -59,17 +59,21 @@ fbum <- function(x, lambda, a){ lambda+(1-lambda)*a*x^(a-1) };
 fbumLL  <- function(parms, x){sum(log(fbum(x, parms[1], parms[2])))};
 
 # ... standard optim
-bumOptim <- function(x, starts=1)
+bumOptim <- function(x, starts=1, labels=NULL)
 {
-  if(is.null(names(x)))
+  if(is.null(names(x)) && is.null(labels))
   {
-    warning("Please name the p-values with the gene names!")
+    warning("Please name the p-values with the gene names or give labels!")
     names(x) <- as.character(1:length(x))
   }
-	a <- runif(starts, 0.3, 0.7)
-	lambda <- runif(starts, 0.3, 0.7)
-	value <- Inf
-	best <- list()
+  if(!is.null(labels))
+  {
+	names(x) <- labels
+  }
+  a <- runif(starts, 0.3, 0.7)
+  lambda <- runif(starts, 0.3, 0.7)
+  value <- Inf
+  best <- list()
   for(i in 1:starts)
   {
     test.optim <- try(opt <- optim(c(lambda[i], a[i]), fn=.fbumnLL, gr=.fpLL, x=x, lower=rep(1e-5,3), method="L-BFGS-B", upper=rep(1-1e-5,3)))
@@ -188,7 +192,7 @@ scoreNodes <- function(network, fb, fdr=0.05)
   {
 	if(is.null(V(network)$name))
     {
-      V(network)$name <- seq(from=1, to=length(V(network)))
+      V(network)$name <- as.character(V(network))
     }
     score <- score[V(network)$name]
     return(score)
@@ -203,14 +207,19 @@ getCompScores <- function(network, score)
 {
   if(is(network, "igraph"))
   {
-    network <- igraph.to.graphNEL(network) 
+    cl.network <- clusters(network) 
+    cc <- order(cl.network$csize, decreasing=TRUE)-1  
+    cc <- lapply(cc, memb= cl.network$membership, function(x, memb=memb) V(network)[which(memb==x)-1]$name)
   }
-  cc     <- connComp(network)   
-  cc     <- cc[order(listLen(cc), decreasing=TRUE)];
-  len    <- listLen(cc)
-  label  <- unlist(cc);
-  comp   <- unlist(mapply(rep,1:length(len), len ));
-  score  <- score[match(label, names(score))];
+  else
+  {
+	 cc <- connComp(network)   
+	 cc <- cc[order(listLen(cc), decreasing=TRUE)];  
+  }
+  len <- listLen(cc)
+  label <- unlist(cc);
+  comp <- unlist(mapply(rep,1:length(len), len ));
+  score <- score[match(label, names(score))];
   return(data.frame(comp=comp,label=label, score=score));
 }
 
