@@ -23,6 +23,8 @@ saveNetwork <- function(network, name="network", file, type=c("table", "XGMML", 
   type <- match.arg(type)
   if(type == "XGMML")
   {
+  require(XML)
+  addNode <- XML::addNode
     if(is(network, "graphNEL"))
     {
       network <- igraph.from.graphNEL(network)  
@@ -39,6 +41,8 @@ saveNetwork <- function(network, name="network", file, type=c("table", "XGMML", 
     # save to file as xgmml
     print("...writing to file")
     saveXML(top, file=paste(file, ".xgmml", sep=""), encoding="UTF-8")
+	if("package:XML" %in% search()){detach("package:XML")}
+	addNode <- graph::addNode
   }
   if(type == "table")
   {
@@ -55,8 +59,14 @@ saveNetwork <- function(network, name="network", file, type=c("table", "XGMML", 
       network <- igraph.from.graphNEL(network)  
     }
     edges <- .graph.sif(network=network, file=file)
-    .graph.eda(network=network, file=file, edgelist.names=edges)
-    .graph.noa(network=network, file=file)
+	if(length(list.edge.attributes(network))!=0)
+	{
+		.graph.eda(network=network, file=file, edgelist.names=edges)
+	}
+	if(length(list.vertex.attributes(network))!=0)
+	{
+		.graph.noa(network=network, file=file)
+	}
   }
   if(type == "tab")
   {
@@ -186,24 +196,30 @@ loadNetwork.tab <- function(file, header=TRUE, directed=FALSE, format=c("graphNE
 {
   # create vertex attributes
   attrib <- list.vertex.attributes(network)
-  node.attribs <- matrix(data=NA, ncol=length(attrib), nrow=length(V(network)))
-  for(i in 1:length(attrib))
+  if(length(attrib)!=0)
   {
-    node.attribs[,i] <- get.vertex.attribute(network, attrib[i])
+    node.attribs <- matrix(data=NA, ncol=length(attrib), nrow=length(V(network)))
+    for(i in 1:length(attrib))
+    {
+      node.attribs[,i] <- get.vertex.attribute(network, attrib[i])
+    }
+    node.attribs <- cbind(V(network)$name, node.attribs) 
+    colnames(node.attribs) <- c("id", attrib)
+    write.table(node.attribs, file=paste(file, "_n.txt", sep=""), row.names=FALSE, sep="\t")
   }
-  node.attribs <- cbind(V(network)$name, node.attribs) 
-  colnames(node.attribs) <- c("id", attrib)
   attrib <- list.edge.attributes(network)
-  edge.attribs <- matrix(data=NA, ncol=length(attrib), nrow=length(E(network)))
-  for(i in 1:length(attrib))
+  if(length(attrib)!=0)
   {
-    edge.attribs[,i] <- get.edge.attribute(network, attrib[i])
+    edge.attribs <- matrix(data=NA, ncol=length(attrib), nrow=length(E(network)))
+    for(i in 1:length(attrib))
+    {
+      edge.attribs[,i] <- get.edge.attribute(network, attrib[i])
+    }
+    edgelist.names <- get.edgelist(network, names=TRUE)
+    edge.attribs <- cbind(edgelist.names, edge.attribs)
+    colnames(edge.attribs) <- c("nodeA", "nodeB", attrib)
+    write.table(edge.attribs, file=paste(file, "_e.txt", sep=""), row.names=FALSE, sep="\t")
   }
-  edgelist.names <- get.edgelist(network, names=TRUE)
-  edge.attribs <- cbind(edgelist.names, edge.attribs)
-  colnames(edge.attribs) <- c("nodeA", "nodeB", attrib)
-  write.table(node.attribs, file=paste(file, "_n.txt", sep=""), row.names=FALSE, sep="\t")
-  write.table(edge.attribs, file=paste(file, "_e.txt", sep=""), row.names=FALSE, sep="\t")
 }    
 
 # internal function to write cytoscape .sif file
@@ -315,7 +331,7 @@ loadNetwork.tab <- function(file, header=TRUE, directed=FALSE, format=c("graphNE
   node.attribs <- matrix(lapply(node.attribs, xmlNode), nrow = length(attrib), ncol = length(V(network)))
   if(is.null(V(network)$name))
   {
-    V(network)$name <- seq(from=1, to=length(V(network)))
+    V(network)$name <- as.character(V(network))
   }
   node.label <- V(network)$name
   node.id <- as.vector(V(network))

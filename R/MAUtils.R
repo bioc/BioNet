@@ -39,7 +39,7 @@
     {
 	  if(is.null(V(network)$name))
 	  {
-        V(network)$name <- seq(from=1, to=length(V(network)))
+        V(network)$name <- as.character(V(network))
 	  }
       nodes <- V(network)$name
       names(nodes) <- get.vertex.attribute(network, name=attr, index=V(network))

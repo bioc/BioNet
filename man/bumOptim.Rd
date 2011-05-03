@@ -7,14 +7,17 @@ Fitting a beta-uniform mixture model to p-value distribution
 The function fits a beta-uniform mixture model to a given p-value distribution.
 }
 \usage{
-bumOptim(x, starts=1)
+bumOptim(x, starts=1, labels=NULL)
 }
 \arguments{
   \item{x}{
-Numerical vector of p-values.  
+Numerical vector of p-values, has to be named with the gene names or the gene names can be given in the labels paramater.  
   }
   \item{starts}{
 Number of start points for the optimization.
+}
+  \item{labels}{
+Gene names for the p-values.
 }
 }
 \value{

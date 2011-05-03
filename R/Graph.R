@@ -60,9 +60,9 @@ makeNetwork <- function(source, target, edgemode = "undirected", format = c("gra
   if(is(network, "igraph"))
   {
      mapping <- seq(0, (length(V(network))-1))
-	   if(is.null(V(network)$name))
-	   {
-        V(network)$name <- seq(from=1, to=length(V(network)))
+	 if(is.null(V(network)$name))
+	 {
+        V(network)$name <- as.character(V(network))
      }
      names(mapping) <- V(network)$name
      nodeList = mapping[nodeList]
@@ -88,6 +88,10 @@ makeNetwork <- function(source, target, edgemode = "undirected", format = c("gra
   if(is(network, "igraph"))
   {
      mapping <- seq(0, (length(V(network))-1))
+	 if(is.null(V(network)$name))
+	 {
+        V(network)$name <- as.character(V(network))
+     }
      names(mapping) <- V(network)$name
      nodeList = mapping[nodeList]
      if(any(is.na(nodeList)))

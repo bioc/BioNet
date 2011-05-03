@@ -63,7 +63,7 @@ writeHeinzNodes <- function(network, file, node.scores=0, use.score=FALSE)
   }
   if(is.null(V(network)$name))
   {
-    V(network)$name <- seq(from=1, to=length(V(network)))
+    V(network)$name <- as.character(V(network))
   }
   if(use.score)
   {
@@ -72,6 +72,10 @@ writeHeinzNodes <- function(network, file, node.scores=0, use.score=FALSE)
       node.scores <- V(network)$score
       names(node.scores) <- V(network)$name
     }
+  }
+  if(is(node.scores, "data.frame"))
+  {
+    node.scores <- as.matrix(node.scores)
   }
   if(!is(node.scores, "matrix"))
   {
@@ -407,6 +411,10 @@ runFastHeinz <- function(network, scores)
         network <- igraph.from.graphNEL(network)
         net.flag <- TRUE
     }
+    if(is.null(V(network)$name))
+    {
+      V(network)$name <- as.character(V(network))
+    }
     V(network)$score <- scores[V(network)$name]
     pos.nodes <- names(scores[which(scores > 0)])
     if (length(pos.nodes) == 0) {
@@ -534,18 +542,21 @@ runFastHeinz <- function(network, scores)
             max.score <- path.score[[best.pos]]
         }
     }
-    wo <- c()
-    cluster.list <- V(mst.subg)[best.path]$clusters
-    lengths <- unlist(lapply(cluster.list, length))
-    for (i in 1:length(cluster.list)) {
-        res <- lapply(cluster.list, intersect, cluster.list[[i]])
-        if (length(setdiff(res[[i]], unique(unlist(res[-i])))) == 
-            0) {
-            wo <- c(wo, i)
+    if(length(best.path)!=1){
+      cluster.list <- V(mst.subg)[best.path]$clusters
+  	  names.list <- as.character(1:length(cluster.list))
+  	  names(cluster.list) <- names.list
+  	  names(best.path) <- names.list
+      for (i in names.list) {
+          res <- lapply(cluster.list, intersect, cluster.list[[i]])
+  		  if(length(names(unlist(res[-which(names(res)==i)])))>1 && any(names(unlist(res[-which(names(res)==i)]))<i) && any(names(unlist(res[-which(names(res)==i)]))>i)){
+  			  if (length(setdiff(res[[i]], unique(unlist(res[-which(names(res)==i)]))))==0){
+  				  cluster.list <- cluster.list[-which(names(cluster.list)==i)]
+  				  names.list <- names.list[-which(names.list==i)]
+  			  }
         }
-    }
-    if (!is.null(wo)) {
-        best.path <- best.path[-wo]
+      }
+      best.path <- best.path[names.list]
     }
     module <- V(mst.subg)[best.path]$name
     pos.cluster <- V(sub.interactome2)[unique(unlist(V(mst.subg)[best.path]$clusters))]$name
