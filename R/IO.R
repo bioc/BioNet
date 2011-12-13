@@ -72,24 +72,42 @@ saveNetwork <- function(network, name="network", file, type=c("table", "XGMML", 
   {
     if(is(network, "igraph"))
     {
-      network <- igraph.to.graphNEL(network)  
-      .saveGraph.tab(graph=network, filename=file)
+		nE <- ecount(network)
+		network <- simplify(network, remove.multiple = TRUE)
+		if(nE!=ecount(network))
+		{
+			warning("Multiple edges are not allowed for the graphNEL format, they had to be removed")
+		}
+		network <- igraph.to.graphNEL(network)
+		.saveGraph.tab(graph=network, filename=file)
     }  
   }
   if(type == "tgf")
   {
-    if(is(network, "igraph"))
-    {
-      network <- igraph.to.graphNEL(network) 
-      .saveGraph.tgf(graph=network, filename=file) 
+		if(is(network, "igraph"))
+		{
+		nE <- ecount(network)
+		network <- simplify(network, remove.multiple = TRUE)
+		if(nE!=ecount(network))
+		{
+			warning("Multiple edges are not allowed for the graphNEL format, they had to be removed")
+		}
+		network <- igraph.to.graphNEL(network)
+		.saveGraph.tgf(graph=network, filename=file) 
     }
   }
   if(type == "net")
   {
     if(is(network, "igraph"))
     {
-      network <- igraph.to.graphNEL(network) 
-      .saveGraph.net(graph=network, filename=file) 
+		nE <- ecount(network)
+		network <- simplify(network, remove.multiple = TRUE)
+		if(nE!=ecount(network))
+		{
+			warning("Multiple edges are not allowed for the graphNEL format, they had to be removed")
+		}
+		network <- igraph.to.graphNEL(network)
+		.saveGraph.net(graph=network, filename=file) 
     }  
   }
 }
@@ -120,6 +138,12 @@ loadNetwork.sif <- function(sif.file, na.file=NULL, ea.file=NULL, format=c("grap
   }
   if(format == "graphNEL")
   {
+	nE <- ecount(network)
+	network <- simplify(network, remove.multiple = TRUE)
+	if(nE!=ecount(network))
+	{
+		warning("Multiple edges are not allowed for the graphNEL format, they had to be removed")
+	}
     network <- igraph.to.graphNEL(network)
   }
   return(network)

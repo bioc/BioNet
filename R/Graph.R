@@ -151,17 +151,15 @@ largestComp <- function(network)
 #
 largestScoreComp <- function(network, score, level=0)
 {
-  net.flag <- FALSE
   if(is(network, "igraph"))
   {
-    network <- igraph.to.graphNEL(network) 
-    net.flag <- TRUE
+	sorted.score <- na.omit(score[V(network)$name])
+	g <- largestComp(subgraph(network, names(sorted.score)[which(sorted.score>level)]))
   }
-  sorted.score <- na.omit(score[nodes(network)])
-  g <- largestComp(subGraph(names(sorted.score)[which(sorted.score>level)], network))
-  if(net.flag)
+  if(is(network, "graphNEL"))
   {
-    g <- igraph.from.graphNEL(g) 
+	sorted.score <- na.omit(score[nodes(network)])
+	g <- largestComp(subGraph(names(sorted.score)[which(sorted.score>level)], network))
   }
   return(g);
 }
@@ -172,22 +170,18 @@ largestScoreComp <- function(network, score, level=0)
 #
 permutateNodes <- function(network)
 {
-  net.flag <- FALSE
   if(is(network, "igraph"))
   {
-    network <- igraph.to.graphNEL(network) 
-    net.flag <- TRUE
+	g <- network;
+	V(g)$name <- sample(V(network)$name);
   }
-  g <- network;
-  nodes(g) <- sample(nodes(network));
-  if(net.flag)
+  if(is(network, "graphNEL"))
   {
-    g <- igraph.from.graphNEL(g) 
+	g <- network;
+	nodes(g) <- sample(nodes(network));
   }
   return(g);
 }
-
-
 
 
 # compare.two.networks(network, subnetwork)

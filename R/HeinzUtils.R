@@ -242,16 +242,20 @@ writeHeinz <- function(network, file, node.scores=0, edge.scores=0, use.node.sco
 #   heinz.n.file: the heinz node input file, both files are required
 #   N: boolean, whether to use the node file
 #   E: boolean, whether to use the edge file, both files are required
-runHeinz <- function(heinz.folder="", heinz.e.file, heinz.n.file, N=TRUE, E=FALSE, diff=-1, n=1)
+runHeinz <- function (heinz.folder = "", heinz.e.file, heinz.n.file, N = TRUE, 
+    E = FALSE, diff = -1, n = 1) 
 {
-  if(heinz.folder != "")
-  {
-    heinz.folder <- file.path(heinz.folder, "", fsep = .Platform$file.sep)
-  }
-  N = if (N) "True" else "False"
-  E = if (E) "True" else "False"
-  command <- paste(heinz.folder, "heinz.py -e ", heinz.e.file, " -n ", heinz.n.file, " -N ", N, " -E ", E, " -d", diff, " -s", n, sep="")
-  system(command)
+    if (heinz.folder != "") {
+        heinz.folder <- file.path(heinz.folder, "", fsep = .Platform$file.sep)
+    }
+    N = if (N) 
+        "True"
+    else "False"
+    E = if (E) 
+        "True"
+    else "False"
+    command <- paste("cd ", heinz.folder, ";", "heinz.py -e ", heinz.e.file, " -n ", heinz.n.file, " -N ", N, " -E ", E, " -d ", diff, " -s ", n, sep = "")
+    system(command)
 }
   
 #
@@ -421,6 +425,12 @@ runFastHeinz <- function(network, scores)
         warning("No positive nodes")
         module <- graph.empty(n = 0, directed = FALSE)
         if (net.flag) {
+			nE <- ecount(module)
+			module <- simplify(module, remove.multiple = TRUE)
+			if(nE!=ecount(module))
+			{
+				warning("Multiple edges between two nodes had to be removed for calculation")
+			}
             module <- igraph.to.graphNEL(module)
         }
         return(module)
@@ -428,6 +438,12 @@ runFastHeinz <- function(network, scores)
     if (length(pos.nodes) == 1) {
         module <- .subNetwork0(pos.nodes, network)
         if (net.flag) {
+			nE <- ecount(module)
+			module <- simplify(module, remove.multiple = TRUE)
+			if(nE!=ecount(module))
+			{
+				warning("Multiple edges between two nodes had to be removed for calculation")
+			}
             module <- igraph.to.graphNEL(module)
         }
         return(module)
@@ -524,11 +540,17 @@ runFastHeinz <- function(network, scores)
             "cluster")), nrow = 2)[2, ])])
         module <- .subNetwork0(module, network)
         if (net.flag) {
+			nE <- ecount(module)
+			module <- simplify(module, remove.multiple = TRUE)
+			if(nE!=ecount(module))
+			{
+				warning("Multiple edges between two nodes had to be removed for calculation")
+			}
             module <- igraph.to.graphNEL(module)
         }
         return(module)
     }
-    subg <- decompose.graph(subgraph(sub.interactome2, neg.node.ids.2))[[1]]
+    subg <- largestComp(subgraph(sub.interactome2, neg.node.ids.2))
     mst.subg <- minimum.spanning.tree(subg, E(subg)$weight)
     max.score <- 0
     best.path <- c()
@@ -565,6 +587,12 @@ runFastHeinz <- function(network, scores)
         "cluster")), nrow = 2)[2, ])]))
     module <- .subNetwork0(module, network)
     if (net.flag) {
+		nE <- ecount(module)
+		module <- simplify(module, remove.multiple = TRUE)
+		if(nE!=ecount(module))
+		{
+			warning("Multiple edges between two nodes had to be removed for calculation")
+		}
         module <- igraph.to.graphNEL(module)
     }
     return(module)

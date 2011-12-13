@@ -10,13 +10,13 @@
 #   pvalues: vector of p-values
 #   fb: fitted bum model to the p-value distribution
 # values: plot -> quantiles of the bum distribution and the observed p-values
-plot.bum <- function(x, ...)
+plot.bum <- function(x, main="QQ-Plot", xlab="Estimated p-value", ylab="Observed p-value", ...)
 {
 	n <- length(x$pvalues)
 	probs <- (rank(sort(x$pvalues))-.5)/n
 	# get quantiles of the bum distribution
 	quantiles <- unlist(sapply(probs, uniroot, f=.pbum.solve, interval=c(0,1), lambda=x$lambda, a=x$a)[1,])
-	plot(c(0,1),c(0,1), main="QQ-Plot", xlab="Estimated p-value", ylab="Observed p-value", type="n", ...)
+	plot(c(0,1),c(0,1), main=main, xlab=xlab, ylab=ylab, type="n", ...)
 	lines(quantiles, sort(x$pvalues), lty=2) 
 	lines(c(0,1),c(0,1), col="grey")		
 }
@@ -26,9 +26,9 @@ plot.bum <- function(x, ...)
 #   pvalues: vector of p-values
 #   fb: fitted bum model to the p-value distribution
 # values: plot -> histogram of p-values with fitted bum distribution
-hist.bum <- function(x, ...)
+hist.bum <- function(x, breaks=50, main="Histogram of p-values", xlab="P-values", ylab="Density", ...)
 {
-	hist(x$pvalues, breaks=50,  probability=TRUE, main="Histogram of p-values", xlab="P-values", ylab="Density", ...)
+	hist(x$pvalues, breaks=breaks,  probability=TRUE, main=main, xlab=xlab, ylab=ylab, ...)
 	bum.data <- seq(from=0, to=1, 1/100)
 	lines(bum.data, x$lambda+(1-x$lambda)*x$a*bum.data^(x$a-1), lwd=3, col="red3");
 	abline(h=piUpper(x), col="blue3", lwd=2);

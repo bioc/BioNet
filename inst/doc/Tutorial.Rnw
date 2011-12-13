@@ -402,7 +402,7 @@ which are unique, and returns the network names in the expression matrix. This r
 in the network.
 
 <<>>=
-mapped.eset = mapByVar(ALL, network=interactome, attr="geneID")
+mapped.eset <- mapByVar(ALL, network=interactome, attr="geneID")
 mapped.eset[1:5,1:5]
 @
 
@@ -419,7 +419,7 @@ subnetwork. Furthermore, we want to identify modules as connected subgraphs, the
 network and remove existing self-loops.
 
 <<>>=
-network = subNetwork(rownames(mapped.eset), interactome)
+network <- subNetwork(rownames(mapped.eset), interactome)
 network
 network <- largestComp(network)
 network <- rmSelfLoops(network)
@@ -436,8 +436,8 @@ In the next step we use \texttt{limma} \citep{Smyth2005} to analyse differential
 
 <<>>=
 library(limma)
-design= model.matrix(~ -1+ factor(c(substr(unlist(ALL$BT), 0, 1))))
-colnames(design)= c("B", "T")
+design <- model.matrix(~ -1+ factor(c(substr(unlist(ALL$BT), 0, 1))))
+colnames(design)<- c("B", "T")
 contrast.matrix <- makeContrasts(B-T, levels=design)
 contrast.matrix 
 fit <- lmFit(mapped.eset, design)
@@ -448,7 +448,7 @@ fit2 <- eBayes(fit2)
 We get the corresponding p-values and and calculate the scores thereupon. 
 
 <<>>= 
-pval = fit2$p.value[,1]                                
+pval <- fit2$p.value[,1]                                
 @
 
 \subsection{Calculation of the score}
