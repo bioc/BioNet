@@ -19,6 +19,9 @@ export(plot.bum, hist.bum, plotLLSurface, plotModule, plot3dModule, save3dModule
 # Statistic functions
 export(aggrPvals, fbum, fbumLL, bumOptim, print.bum, summary.bum, fitBumModel, fdrThreshold, piUpper, scoreOffset, scoreFunction, scoreNodes, getCompScores)
 
+# Resampling functions
+export(resamplingPvalues, consensusScores, sortedEdgeList)
+
 # S3 methods
 S3method(print, bum)
 S3method(summary, bum)

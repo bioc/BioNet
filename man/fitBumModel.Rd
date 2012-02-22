@@ -11,7 +11,7 @@ whereas the noise component is uniform-distributed under the null hypothesis.
 
 }
 \usage{
-fitBumModel(x, plot = TRUE)
+fitBumModel(x, plot = TRUE, starts=10)
 }
 \arguments{
   \item{x}{
@@ -19,6 +19,9 @@ Numeric vector of p-values.
 }
   \item{plot}{
 Boolean value, whether to plot a histogram and qqplot of the p-values with the fitted model.
+}
+  \item{starts}{
+Numeric value giving the number of starts for the optimization.
 }
 }
 \value{

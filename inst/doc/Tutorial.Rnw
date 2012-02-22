@@ -16,7 +16,8 @@
 \newcommand{\FDR}{$\mathit{FDR}$\xspace}
 \newcommand{\heinz}{\texttt{heinz}\xspace}
 \newcommand{\BioNet}{\textsf{BioNet}\xspace}
-
+\SweaveOpts{keep.source=FALSE}
+\parindent=0pt
 
 \title{\BioNet Tutorial}
 
@@ -254,7 +255,6 @@ dev.new(width=13, height=7)
 par(mfrow=c(1,2))
 hist(fb)
 plot(fb)
-
 dev.off()
 @
 \includegraphics[width=\textwidth]{bum1.pdf}
@@ -359,6 +359,7 @@ DNTTIP2, and PCNA. Likewise, genes IRF4, TRAF2, and BCL2, which are
 associated with the potent and oncogenic NF$\kappa$B pathway. 
 
 \section{ALL Study}
+\label{sec:ALL}
 This section describes the integrated network approach applied to the analysis of Affymetrix microrray data. In addition to the previous section, the 
 data is analysed for differential expression using the package \texttt{limma} \citep{Smyth2005}. The resulting module can be exported in various formats 
 and for example displayed with Cytoscape \citep{Shannon2003}.  
@@ -430,6 +431,7 @@ network
 So finally we derive a \emph{chip-specific} network which comprises \Sexpr{numNodes(network)} nodes and \Sexpr{numEdges(network)} edges.
 
 \subsection{Calculating the p-values}
+\label{sec:ALL_pvals}
 
 \paragraph{Differential expression}
 In the next step we use \texttt{limma} \citep{Smyth2005} to analyse differential expression between the B-cell and T-cell groups.
@@ -547,6 +549,103 @@ processing and presentation and immune response (HLA-DMA, HLA-DPA1, CD4, HLA-DMB
 developmental processes and programmed cell death. 
 Most of them are involved in overall immune system processes and as expected, mostly B and T cell specific genes comprise the
 resulting module, as this contrast was used for the test of differential expression.
+
+\section{Consensus modules}
+To assess the variation inherent in the integrated data, we use a jackknife resampling procedure resulting in an ensemble of optimal modules. A consensus approach summarizes the ensemble into one final module containing maximally robust nodes and edges. The resulting consensus module visualizes variable regions by assigning support values to nodes and edges. The consensus module is calculated using the acute lymphoblastic leukemia data from the previous section.
+
+First, we perform the same steps as explained in \ref{sec:ALL} and start with the data obtained up to subsection \ref{sec:ALL_pvals}. We use the \emph{chip-specific} network which comprises \Sexpr{numNodes(network)} nodes and \Sexpr{numEdges(network)} edges and the ALL microarray dataset.
+
+\subsection{Calculating the p-values}
+\paragraph{Differential expression}
+We resample the microarrays and calculate p-values using a standard two-sided t-test for the differential expression between the B-cell and T-cell groups. 100 jackknife replicates are created and used to test for differential expression.\\
+
+Depending on the number of resamples the next steps can take a while.
+
+<<eval=F>>=
+j.repl <- 100
+resampling.pvals <- list()
+for(i in 1:j.repl)
+{
+  resampling.result <- resamplingPvalues(exprMat=mapped.eset, groups=factor(c(substr(unlist(ALL$BT), 0, 1))), resampleMat=FALSE, alternative="two.sided")
+  resampling.pvals[[i]] <- resampling.result$p.values
+  print(i)
+}
+@
+
+We use the obtained p-values to calculate scores thereupon. 
+
+\subsection{Calculation of the score}
+
+For each jackknife replicate a BUM model is fitted to the p-value distribution, which is used to calculate node scores. The same \FDR as before is used. 
+
+<<eval=F>>=
+fb <- lapply(resampling.pvals, fitBumModel, plot=FALSE, starts=1)
+resampling.scores <- c()
+for(i in 1:j.repl)
+{
+  resampling.scores[[i]] <- scoreNodes(network=network, fb=fb[[i]], fdr=1e-14)
+}
+@
+
+We create a matrix of scores to calculate the modules. This creates one node file as input for the ILP calculation. Alternatively one node file can be created for each jackknife resample, which then can be run in parallel on a cluster or multicore machine. This approach is preferable, due to possibly many jackknife resamples. For simplification we use the matrix variant here.
+
+<<eval=F>>=
+score.mat <- as.data.frame(resampling.scores)
+colnames(score.mat) <- paste("resample", (1:j.repl), sep="")
+@
+
+The node scores are written to file in the next step. For the edge scores the binary interactions are written to file with a score of 0.
+
+<<eval=F>>=
+writeHeinzEdges(network=network, file="ALL_e_resample", use.score=FALSE)
+writeHeinzNodes(network=network, file="ALL_n_resample", node.scores = score.mat)
+@ 
+
+\subsection{Calculation of the optimal subnetworks} \label{sec:mss2}
+
+In the following the \heinz algorithm is started using the \texttt{heinz.py} python script. This starts the integer linear programming optimization and calculates the maximum-scoring subnetwork using \texttt{CPLEX}. In contrast to previous calculations we define a size the resulting modules should have. We set it with the size parameter s to the size of the original module, which was 31. This fixes the size of the output modules for a later consensus module calculation.\\
+
+The command is: "heinz.py -e ALL\_e\_resample.txt -n ALL\_n\_resample.txt -N True -E False -S 31"\\
+
+The output is precalculated in \texttt{ALL\_n\_resample.txt.0.hnz} and
+\texttt{ALL\_e\_resample.txt.0.hnz} in the R \BioNet 
+directory, subdirectory extdata. The output is loaded as a list of graphs with the following commands:
+
+<<>>=
+datadir <- file.path(.path.package("BioNet"), "extdata") 
+modules <- readHeinzGraph(node.file=file.path(datadir, "ALL_n_resample.txt.0.hnz"), network=network)
+@
+
+\subsection{Calculation of the consensus module} \label{sec:mss2}
+
+We have obtained now 100 modules from the resampled data. These are used to calculate consensus scores for the nodes and edges of the network and recalculate an optimal module. This module, termed consensus module, captures the variance in the microarray data and depicts the robust solution. Confidence values for the nodes and edges can be visualized by the node size and edge width, allowing to identify stable parts of the module.\\
+
+We therefore use the modules to calculate consensus scores in the following and rescore the network:
+
+<<>>=
+cons.scores <- consensusScores(modules, network)
+writeHeinz(network=network, file="ALL_cons", node.scores=cons.scores$N.scores, edge.scores=cons.scores$E.scores)
+@
+
+They are run using CPLEX: "heinz.py -e ALL\_cons\_e.txt -n ALL\_cons\_n.txt -N True -E True -S 31". Mind to also use the edge scores with -E True.\\
+
+The results are loaded in R and visualized.
+
+<<>>=
+datadir <- file.path(.path.package("BioNet"), "extdata") 
+cons.module <- readHeinzGraph(node.file=file.path(datadir, "ALL_cons_n.txt.0.hnz"), network=network)
+cons.edges <- sortedEdgeList(cons.module)
+E.width <- 1+cons.scores$E.freq[cons.edges]*10
+N.size <- 1+cons.scores$N.freq[nodes(cons.module)]*10
+@
+
+\begin{center}
+<<fig=T>>=
+plotModule(cons.module, edge.width=E.width, vertex.size=N.size, edge.label=cons.scores$E.freq[cons.edges]*100, edge.label.cex=0.6)
+@
+\captionof{figure}{Resultant consensus module. The size of the nodes and the width of the edges depict the robustness of this node or edge as calculated from the jackknife replicates.}
+\label{fig:module1}
+\end{center}
 
 
 \section{Installation}\label{sec:installation}

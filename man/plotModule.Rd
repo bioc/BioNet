@@ -13,7 +13,7 @@ values are colored in red. If the vectors are not provided, it will be automatic
 \emph{score} and \emph{diff.expr}.
 }
 \usage{
-plotModule(network, layout=layout.fruchterman.reingold, labels=NULL, diff.expr=NULL, scores=NULL, main=NULL, \dots)
+plotModule(network, layout=layout.fruchterman.reingold, labels=NULL, diff.expr=NULL, scores=NULL, main=NULL, vertex.size=NULL, \dots)
 }
 \arguments{
   \item{network}{
@@ -30,6 +30,7 @@ Labels for the nodes of the network.
   \item{scores}{Named numerical vector of scores of the nodes in the network. These will be used for the shape of the nodes. 
   It will be automatically looked for nodes attribute with the name \emph{score}, if the argument is null.}
   \item{main}{Main title of the plot.}
+  \item{vertex.size}{Numerical value or verctor for the size of the vertices.}
   \item{\dots}{Other graphic parameters for the plot.}
 }
 \author{

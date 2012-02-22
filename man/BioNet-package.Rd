@@ -1,5 +1,5 @@
 \name{BioNet-package}
-\Rdversion{1.13.1}
+\Rdversion{1.13.2}
 \alias{BioNet-package}
 \alias{BioNet}
 \docType{package}
@@ -20,8 +20,8 @@ the maximum scoring subnetwork.
 \tabular{ll}{
 Package: \tab BioNet\cr
 Type: \tab Package\cr
-Version: \tab 1.13.1\cr
-Date: \tab 2011-12-12\cr
+Version: \tab 1.13.2\cr
+Date: \tab 2011-02-22\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 }

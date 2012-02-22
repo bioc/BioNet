@@ -66,88 +66,104 @@ plotLLSurface <- function(x, opt=NULL, main="Log-Likelihood Surface", color.pale
 
 
 # graph plot in igraph
-plotModule <- function(network, layout=layout.fruchterman.reingold, labels=NULL, diff.expr=NULL, scores=NULL, main=NULL, ...)
-{
-  if(is(network, "graphNEL"))
-  {
-    network <- igraph.from.graphNEL(network)
-  }
-  if(is.null(V(network)$name))
-  {
-    V(network)$name <- as.character(V(network))
-  }  
-  if(is.null(labels))
-  {
-    if("geneSymbol" %in% list.vertex.attributes(network))
+plotModule <- function (network, layout = layout.fruchterman.reingold, labels = NULL, diff.expr = NULL, scores = NULL, main = NULL, vertex.size=NULL, ...) 
+{    
+    if (is(network, "graphNEL"))
     {
-      labels <- V(network)$geneSymbol
+        network <- igraph.from.graphNEL(network)
     }
-    else{ labels <- V(network)$name}
-  }
-  shapes <- rep("circle", length(V(network)))
-  names(shapes) <- V(network)$name 
-  if(!is.null(scores) && !is.null(names(scores)))
-  {
-    shapes[intersect(names(which(scores<0)), V(network)$name)] <- "csquare" 
-  } 
-  if(is.null(scores) && "score" %in% list.vertex.attributes(network))
-  {
-    scores <- V(network)$score
-    names(scores) <- V(network)$name
-    shapes[names(which(scores<0))] <- "csquare" 
-  } 
-  if(!is.null(diff.expr) && !is.null(names(diff.expr)))
-  {
-    coloring <- .node.color(network, diff.expr)
-  } 
-  else
-  {
-    coloring <- "SkyBlue2"
-  }
-  if(is.null(diff.expr) && "diff.expr" %in% list.vertex.attributes(network))
-  {
-    diff.exprs = V(network)$diff.expr
-    names(diff.exprs) <- V(network)$name
-    coloring <- .node.color(network, diff.exprs)
-  } 
-  max.labels <-  max(nchar(labels))
-  network.size = length(V(network))
-  cex = 0.6
-  if(network.size<50)
-  {
-    if(max.labels > 2)
+    if (is.null(V(network)$name))
     {
-      vertex.size <- 8
-      labels.dist <- 0.5
-    } 
+        V(network)$name <- as.character(V(network))
+    }
+    if (is.null(labels))
+    {
+        if ("geneSymbol" %in% list.vertex.attributes(network))
+        {
+            labels <- V(network)$geneSymbol
+        }
+        else
+        {
+            labels <- V(network)$name
+        }
+
+    }
+    shapes <- rep("circle", length(V(network)))
+    names(shapes) <- V(network)$name
+    if (!is.null(scores) && !is.null(names(scores)))
+    {
+        shapes[intersect(names(which(scores < 0)), V(network)$name)] <- "csquare"
+    }
+    if (is.null(scores) && "score" %in% list.vertex.attributes(network))
+    {
+        scores <- V(network)$score
+        names(scores) <- V(network)$name
+        shapes[names(which(scores < 0))] <- "csquare"
+    }
+    if (!is.null(diff.expr) && !is.null(names(diff.expr)))
+    {
+        coloring <- .node.color(network, diff.expr)
+    }
     else
     {
-      vertex.size <- 15
-      labels.dist <- 0
+        coloring <- "SkyBlue2"
     }
-  }
-  if(network.size<100 && network.size>=50)
-  {
-    vertex.size <- 8
-    if(max.labels > 2)
+    if (is.null(diff.expr) && "diff.expr" %in% list.vertex.attributes(network))
     {
-      labels.dist <- 0.5
-    } 
-    else
-    {
-      labels.dist <- 0
+        diff.exprs = V(network)$diff.expr
+        names(diff.exprs) <- V(network)$name
+        coloring <- .node.color(network, diff.exprs)
     }
-  }
-  if(network.size>=100)
-  {
-    vertex.size <- 8
-    if(max.labels > 3)
+    max.labels <- max(nchar(labels))
+    network.size = length(V(network))
+    vertex.size2 <- 8
+    cex = 0.6
+    if (network.size < 50)
     {
-      labels.dist <- 0.5
-    } 
-    else{labels.dist <- 0}
-  }
-  plot(network, layout=layout, vertex.size=vertex.size, vertex.label=labels , vertex.label.cex=cex, vertex.label.dist=labels.dist, vertex.color=coloring, vertex.label.family="sans", vertex.shape=shapes, main=main, ...); 
+        if (max.labels > 2)
+        {
+
+            labels.dist <- 0.5
+        }
+        else
+        {
+            vertex.size2 <- 15
+            labels.dist <- 0
+        }
+    }
+    if (network.size < 100 && network.size >= 50)
+    {
+
+        if (max.labels > 2)
+        {
+            labels.dist <- 0.5
+        }
+        else
+        {
+            labels.dist <- 0
+        }
+    }
+    if (network.size >= 100)
+    {
+
+        if (max.labels > 3)
+        {
+            labels.dist <- 0.5
+        }
+        else
+        {
+            labels.dist <- 0
+        }
+    }
+    if(!is.null(vertex.size))
+    {
+      vertex.size2 <- vertex.size
+      labels.dist <- vertex.size/15
+    }
+    plot(network, layout = layout, vertex.size = vertex.size2, 
+        vertex.label = labels, vertex.label.cex = cex, vertex.label.dist = labels.dist, 
+        vertex.color = coloring, vertex.label.family = "sans", 
+        vertex.shape = shapes, main = main, ...)
 }
 
 

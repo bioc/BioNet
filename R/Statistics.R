@@ -126,21 +126,21 @@ summary.bum <- function(object, ...)
 #   p.values: p-values
 #   plot: whether to plot a qqplot and a histogram of the fitted values
 # values: fitted model
-fitBumModel <- function(x, plot=TRUE)
+fitBumModel <- function (x, plot = TRUE, starts=10) 
 {
-  if(is.null(names(x)))
-  {
-    warning("Please name the p-values with the gene names!")
-    names(x) = as.character(1:length(x))
-  }
-  fit <- bumOptim(x=x, starts=10)
-  if(plot)
-  {
-    par(mfrow = c(1,2));
-    hist(x=fit)
-    plot(fit)   
-  }
-  return(fit)
+    if (is.null(names(x)))
+    {
+        warning("Please name the p-values with the gene names!")
+        names(x) = as.character(1:length(x))
+    }
+    fit <- bumOptim(x = x, starts)
+    if (plot) 
+    {
+        par(mfrow = c(1, 2))
+        hist(x = fit)
+        plot(fit)
+    }
+    return(fit)
 }
 
 #
