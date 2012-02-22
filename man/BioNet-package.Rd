@@ -21,7 +21,7 @@ the maximum scoring subnetwork.
 Package: \tab BioNet\cr
 Type: \tab Package\cr
 Version: \tab 1.13.2\cr
-Date: \tab 2011-02-22\cr
+Date: \tab 2012-02-22\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 }
