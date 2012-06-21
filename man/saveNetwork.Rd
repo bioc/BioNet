@@ -42,7 +42,7 @@ Daniela Beisser and Marcus Dittrich
 \examples{
 library(DLBCL)
 #create small network
-library(igraph)
+library(igraph0)
 data(interactome) 
 interactome <- igraph.from.graphNEL(interactome)
 small.net <- subNetwork(V(interactome)[0:15]$name, interactome)

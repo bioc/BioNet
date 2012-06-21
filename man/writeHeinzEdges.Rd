@@ -46,7 +46,7 @@ names(score) <- dataLym$label
 
 
 # write another edge file with edge scores 
-library(igraph)
+library(igraph0)
 data(interactome)
 interactome <- igraph.from.graphNEL(interactome)
 small.net <- subNetwork(V(interactome)[0:15]$name, interactome)
