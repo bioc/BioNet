@@ -1,4 +1,4 @@
-import(igraph)
+import(igraph0)
 import(AnnotationDbi)
 
 # I/O functions
