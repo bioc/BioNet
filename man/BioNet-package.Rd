@@ -20,8 +20,8 @@ the maximum scoring subnetwork.
 \tabular{ll}{
 Package: \tab BioNet\cr
 Type: \tab Package\cr
-Version: \tab 1.15.1\cr
-Date: \tab 2012-04-17\cr
+Version: \tab 1.15.3\cr
+Date: \tab 2012-06-21\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 }
