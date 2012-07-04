@@ -580,13 +580,11 @@ runFastHeinz <- function(network, scores)
 
       for (i in names.list) {
           res <- lapply(cluster.list, intersect, cluster.list[[i]])
-  		  if(length(names(unlist(res[-which(names(res)==i)])))>1 && any(names(unlist(res[-which(names(res)==i)]))<i) && any(names(unlist(res[-which(names(res)==i)]))>i)){
+  		  if(length(intersect(unlist(cluster.list[as.character(which(as.numeric(names.list)<as.numeric(i)))]), unlist(cluster.list[as.character(which(as.numeric(names.list)>as.numeric(i)))])))>0){
   			  if (length(setdiff(res[[i]], unique(unlist(res[-which(names(res)==i)]))))==0){
   				  cluster.list <- cluster.list[-which(names(cluster.list)==i)]
   				  names.list <- names.list[-which(names.list==i)]
   			  }
-
-
         }
       }
 
@@ -609,6 +607,7 @@ runFastHeinz <- function(network, scores)
     }
     return(module)
 }
+
 
 # function for lapply
 .getPathScore <- function(path, graph1, graph2, node.score)
