@@ -18,7 +18,7 @@ A graph object.
 }
 \author{Marcus Dittrich}
 \examples{
-library(igraph0)
+library(igraph)
 el <- cbind(c("a", "b", "c", "d", "e", "f", "d"), c("b", "c", "d", "e", "f", "a", "b"))
 graph <- graph.edgelist(el, directed=TRUE)
 

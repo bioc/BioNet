@@ -330,7 +330,7 @@ loadNetwork.tab <- function(file, header=TRUE, directed=FALSE, format=c("graphNE
 .XGMML.nodes <- function(network)
 {
   # create node-nodes
-  c.node <- rep("node", length(V(network)-1))
+  c.node <- rep("node", length(V(network)))
   nodes <- lapply(c.node, xmlNode)
   
   # create node attributes
@@ -374,7 +374,7 @@ loadNetwork.tab <- function(file, header=TRUE, directed=FALSE, format=c("graphNE
 .XGMML.edges <- function(network)
 {
   # create edge-nodes
-  c.edge <- rep("edge", length(E(network)-1))
+  c.edge <- rep("edge", length(E(network)))
   edges <- lapply(c.edge, xmlNode)
   
   edgelist.names <- get.edgelist(network, names=TRUE)

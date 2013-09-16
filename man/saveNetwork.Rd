@@ -42,10 +42,10 @@ Daniela Beisser and Marcus Dittrich
 \examples{
 library(DLBCL)
 #create small network
-library(igraph0)
+library(igraph)
 data(interactome) 
 interactome <- igraph.from.graphNEL(interactome)
-small.net <- subNetwork(V(interactome)[0:15]$name, interactome)
+small.net <- subNetwork(V(interactome)[1:16]$name, interactome)
 E(small.net)$e.weight <- rep(1,length(E(small.net)))
 V(small.net)$n.weight <- rep(2,length(V(small.net)))
 summary(small.net)

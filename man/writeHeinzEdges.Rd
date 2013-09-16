@@ -46,10 +46,10 @@ names(score) <- dataLym$label
 
 
 # write another edge file with edge scores 
-library(igraph0)
+library(igraph)
 data(interactome)
 interactome <- igraph.from.graphNEL(interactome)
-small.net <- subNetwork(V(interactome)[0:15]$name, interactome)
+small.net <- subNetwork(V(interactome)[1:16]$name, interactome)
 scores <- c(1:length(E(small.net)))
 E(small.net)$score <- scores
 \dontrun{writeHeinzEdges(network=small.net, file="test_edges", use.score=TRUE)}

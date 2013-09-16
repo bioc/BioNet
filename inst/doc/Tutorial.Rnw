@@ -199,7 +199,7 @@ In the next step we use \texttt{rowttest} from the package \texttt{genefilter} t
 library(genefilter)
 library(impute)
 expressions <- impute.knn(exprs(exprLym))$data
-t.test <- rowttests(expressions, fac=exprLym$Subgroup)    
+t.test <- rowttests(expressions, fac=exprLym$Subgroup)
 @
 
 <<results=hide>>=
@@ -309,7 +309,7 @@ The output is precalculated in \texttt{lymphoma\_nodes\_001.txt.0.hnz} and \\
 subdirectory "extdata" of the R \BioNet library directory.
 
 <<>>=
-datadir <- file.path(.path.package("BioNet"), "extdata") 
+datadir <- file.path(path.package("BioNet"), "extdata") 
 dir(datadir)
 @
 
@@ -511,7 +511,7 @@ The output is loaded as a graph with the following commands:
 
 
 <<>>=
-datadir <- file.path(.path.package("BioNet"), "extdata") 
+datadir <- file.path(path.package("BioNet"), "extdata") 
 module <- readHeinzGraph(node.file=file.path(datadir, "ALL_nodes_001.txt.0.hnz"), network=network)
 @
 
@@ -612,7 +612,7 @@ The output is precalculated in \texttt{ALL\_n\_resample.txt.0.hnz} and
 directory, subdirectory extdata. The output is loaded as a list of graphs with the following commands:
 
 <<>>=
-datadir <- file.path(.path.package("BioNet"), "extdata") 
+datadir <- file.path(path.package("BioNet"), "extdata") 
 modules <- readHeinzGraph(node.file=file.path(datadir, "ALL_n_resample.txt.0.hnz"), network=network)
 @
 
@@ -632,7 +632,7 @@ They are run using CPLEX: "heinz.py -e ALL\_cons\_e.txt -n ALL\_cons\_n.txt -N T
 The results are loaded in R and visualized.
 
 <<>>=
-datadir <- file.path(.path.package("BioNet"), "extdata") 
+datadir <- file.path(path.package("BioNet"), "extdata") 
 cons.module <- readHeinzGraph(node.file=file.path(datadir, "ALL_cons_n.txt.0.hnz"), network=network)
 cons.edges <- sortedEdgeList(cons.module)
 E.width <- 1+cons.scores$E.freq[cons.edges]*10

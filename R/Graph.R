@@ -59,7 +59,7 @@ makeNetwork <- function(source, target, edgemode = "undirected", format = c("gra
 {
   if(is(network, "igraph"))
   {
-     mapping <- seq(0, (length(V(network))-1))
+     mapping <- seq(1, (length(V(network))))
 	 if(is.null(V(network)$name))
 	 {
         V(network)$name <- as.character(V(network))
@@ -71,7 +71,7 @@ makeNetwork <- function(source, target, edgemode = "undirected", format = c("gra
         nodeList = na.omit(nodeList)
         warning("Not all nodes found in network")
      }
-     subgr <- subgraph(network, v=nodeList) 
+     subgr <- induced.subgraph(network, vids=nodeList) 
   }
   else
   {
@@ -87,7 +87,7 @@ makeNetwork <- function(source, target, edgemode = "undirected", format = c("gra
 {
   if(is(network, "igraph"))
   {
-     mapping <- seq(0, (length(V(network))-1))
+     mapping <- seq(1, (length(V(network))))
 	 if(is.null(V(network)$name))
 	 {
         V(network)$name <- as.character(V(network))
@@ -100,7 +100,7 @@ makeNetwork <- function(source, target, edgemode = "undirected", format = c("gra
         warning("Not all nodes found in network")
      }
      neighb <- unique(unlist(neighborhood(network, nodes=nodeList, order=1)))
-     subgr <- subgraph(network, v=neighb) 
+     subgr <- induced.subgraph(network, vids=neighb) 
   }
   else
   {
@@ -138,8 +138,8 @@ largestComp <- function(network)
   else if(is(network, "igraph"))
   {  
       clust <- clusters(network);
-      cid   <- which.max(clust$csize) - 1;
-      lg    <- subgraph(network, V(network)[clust$membership == cid]);
+      cid   <- which.max(clust$csize);
+      lg    <- induced.subgraph(network, V(network)[clust$membership == cid]);
       return(lg); 
     }
 }
@@ -154,7 +154,7 @@ largestScoreComp <- function(network, score, level=0)
   if(is(network, "igraph"))
   {
 	sorted.score <- na.omit(score[V(network)$name])
-	g <- largestComp(subgraph(network, names(sorted.score)[which(sorted.score>level)]))
+	g <- largestComp(induced.subgraph(network, names(sorted.score)[which(sorted.score>level)]))
   }
   if(is(network, "graphNEL"))
   {
@@ -215,8 +215,8 @@ compareNetworks <- function(network1, network2, plot=TRUE)
     network2 <- largestComp(rmSelfLoops(network2))
     warning("Self-loops were removed and largest component is used for calculation")
   }
-  d <- igraph0::degree(network1, mode="all")
-  d2 <- igraph0::degree(network2, mode="all")
+  d <- igraph::degree(network1, mode="all")
+  d2 <- igraph::degree(network2, mode="all")
   dd <- rev(cumsum(rev(hist(d, -1:max(d), plot=FALSE)$density)))
   dd2 <- rev(cumsum(rev(hist(d2, -1:max(d2), plot=FALSE)$density)))
   degree.exponent.network1 <- power.law.fit(d)
@@ -226,7 +226,7 @@ compareNetworks <- function(network1, network2, plot=TRUE)
     xmax <- max(length(dd), length(dd2))
     plot(dd, log="xy", xlab="degree", ylab="cumulative frequency", main="Cumulative degree distribution", col=1, xlim=c(1,xmax))
     points(dd2, col=2)
-    Lines <- list(bquote("network1, "*gamma==.(round(-coef(degree.exponent.network1), 2))), bquote("network2, "*gamma==.(round(-coef(degree.exponent.network2), 2))))
+    Lines <- list(bquote("network1, "*gamma==.(round(-degree.exponent.network1$alpha, 2))), bquote("network2, "*gamma==.(round(-degree.exponent.network2$alpha, 2))))
     legend("topright", legend=do.call(expression, Lines), text.col=c(1,2))
   }
   diam.network1 <- diameter(network1, directed=FALSE)
@@ -235,7 +235,7 @@ compareNetworks <- function(network1, network2, plot=TRUE)
   av.path.length.network2 <- average.path.length(network2, directed=FALSE, unconnected=FALSE)
   av.degree.network1 <- sum(d)/length(d)
   av.degree.network2 <- sum(d2)/length(d2)
-  network.parameters <- list(unname(diam.network1), diam.network2, av.degree.network1, av.degree.network2, unname(coef(degree.exponent.network1)), unname(coef(degree.exponent.network2)), av.path.length.network1, av.path.length.network2)
+  network.parameters <- list(unname(diam.network1), diam.network2, av.degree.network1, av.degree.network2, -degree.exponent.network1$alpha, -degree.exponent.network2$alpha, av.path.length.network1, av.path.length.network2)
   names(network.parameters) <- c("diam.network1", "diam.network2", "av.degree.network1", "av.degree.network2", "degree.exponent.network1", "degree.exponent.network2", "av.path.length.network1", "av.path.length.network2")
   return(network.parameters)
 }

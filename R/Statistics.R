@@ -208,8 +208,8 @@ getCompScores <- function(network, score)
   if(is(network, "igraph"))
   {
     cl.network <- clusters(network) 
-    cc <- order(cl.network$csize, decreasing=TRUE)-1  
-    cc <- lapply(cc, memb= cl.network$membership, function(x, memb=memb) V(network)[which(memb==x)-1]$name)
+    cc <- order(cl.network$csize, decreasing=TRUE)
+    cc <- lapply(cc, memb= cl.network$membership, function(x, memb=memb) V(network)[which(memb==x)]$name)
   }
   else
   {

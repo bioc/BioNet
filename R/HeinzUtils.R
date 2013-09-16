@@ -298,11 +298,11 @@ readHeinzTree <- function(node.file, edge.file, network, format=c("graphNEL", "i
     nodes2 <- nodes
     if(sum(is.na(as.numeric(edges[,i+1]))) != 0)
     {
-      edges2 <- edges[-which(is.na(as.numeric(edges[,i+1]))),]
+      edges2 <- edges[!is.na(as.numeric(edges[,i+1])),]
     }
     if(sum(is.na(as.numeric(nodes[,i]))) != 0)
     {
-      nodes2 <- nodes[-which(is.na(as.numeric(nodes[,i]))),]
+      nodes2 <- nodes[!is.na(as.numeric(nodes[,i])),]
     }
     if(!is(nodes2, "vector"))
     {
@@ -369,7 +369,7 @@ readHeinzGraph <- function(node.file, network, format=c("graphNEL", "igraph"))
     nodes2 <- nodes
     if(sum(is.na(as.numeric(nodes2[,i]))) != 0)
     {
-      nodes2 <- nodes2[-which(is.na(as.numeric(nodes2[,i]))),]
+      nodes2 <- nodes2[!is.na(as.numeric(nodes2[,i])),]
     }
     if(!is(nodes2, "vector"))
     {
@@ -409,7 +409,7 @@ runFastHeinz <- function(network, scores)
     }
     if(any(is.na(names(scores)))){
         warning("NA in names of scores, score will be removed")
-        scores <- scores[-which(is.na(names(scores)))]        
+        scores <- scores[!is.na(names(scores))]
     }
     if (is(network, "graphNEL")) {
         network <- igraph.from.graphNEL(network)
@@ -450,29 +450,26 @@ runFastHeinz <- function(network, scores)
     }
     pos.subgraph <- .subNetwork0(pos.nodes, network)
     conn.comp.graph <- decompose.graph(pos.subgraph)
-    score.comp <- unlist(lapply(lapply(conn.comp.graph, get.vertex.attribute, 
-        "score"), sum))
+    score.comp <- unlist(lapply(lapply(conn.comp.graph, get.vertex.attribute, "score"), sum))
     conn.comp.graph <- conn.comp.graph[order(score.comp, decreasing = TRUE)]
     score.comp <- sort(score.comp, TRUE)
     for (i in 1:length(conn.comp.graph)) {
         conn.comp.graph[[i]]$score <- score.comp[i]
     }
-    v.id <- seq(0, vcount(network) - 1)
+    v.id <- seq(1, vcount(network))
     names(v.id) <- V(network)$name
     edgelist <- get.edgelist(network, FALSE)
     edgelist1 <- edgelist[, 1]
     edgelist2 <- edgelist[, 2]
     for (i in 1:length(conn.comp.graph)) {
-        new.id <- length(V(network)) - 1 + i
+        new.id <- length(V(network)) + i
         for (j in as.character(v.id[V(conn.comp.graph[[i]])$name])) {
             edgelist1[which(edgelist1 == j)] <- new.id
             edgelist2[which(edgelist2 == j)] <- new.id
         }
     }
-    new.ids <- seq(length(V(network)) - 1 + 1, length(V(network)) - 
-        1 + length(conn.comp.graph))
-    new.names <- paste("cluster", seq(1:length(conn.comp.graph)), 
-        sep = "")
+    new.ids <- seq(length(V(network)) + 1, length(V(network)) + length(conn.comp.graph))
+    new.names <- paste("cluster", seq(1:length(conn.comp.graph)), sep = "")
     names(new.ids) <- new.names
     v.id <- c(v.id, new.ids)
     v.name <- names(v.id)
@@ -480,34 +477,28 @@ runFastHeinz <- function(network, scores)
     new.edgelist <- cbind(v.name[as.character(edgelist1)], v.name[as.character(edgelist2)])
     interactome2 <- graph.edgelist(new.edgelist, FALSE)
     E(interactome2)$weight <- rep(0, length(E(interactome2)))
-    interactome2 <- simplify(interactome2, remove.loops = TRUE, 
-        remove.multiple = TRUE)
+    interactome2 <- simplify(interactome2, remove.loops = TRUE, remove.multiple = TRUE)
     score1 <- scores[V(interactome2)$name]
     names(score1) <- V(interactome2)$name
     score1[which(is.na(score1))] <- 0
     score.degree <- score1/(degree(interactome2) + 1)
     V(interactome2)$score.degree <- score.degree
-    E(interactome2)$weight <- -(V(interactome2)[get.edgelist(interactome2, 
-        FALSE)[, 1]]$score.degree + V(interactome2)[get.edgelist(interactome2, 
-        FALSE)[, 2]]$score.degree)
+    E(interactome2)$weight <- -(V(interactome2)[get.edgelist(interactome2, FALSE)[, 1]]$score.degree + V(interactome2)[get.edgelist(interactome2, FALSE)[, 2]]$score.degree)
     node.score <- scores[V(interactome2)$name]
     names(node.score) <- V(interactome2)$name
-    node.score.cluster <- sapply(conn.comp.graph, get.graph.attribute, 
-        "score")
+    node.score.cluster <- sapply(conn.comp.graph, get.graph.attribute, "score")
     names(node.score.cluster) <- new.names
-    node.score[grep("cluster", names(node.score))] <- node.score.cluster[names(node.score[grep("cluster", 
-        names(node.score))])]
+    node.score[grep("cluster", names(node.score))] <- node.score.cluster[names(node.score[grep("cluster", names(node.score))])]
     decomp.graphs <- decompose.graph(interactome2)
     sum.pos <- lapply(decomp.graphs, function(x) {
         sum(node.score[names(which(node.score[V(x)$name] > 0))])
     })
     interactome2 <- decomp.graphs[[which.max(sum.pos)]]
     rm(decomp.graphs)
-    mst <- minimum.spanning.tree(interactome2, weigths = E(interactome2)$weight)
-    mst.cluster.id <- grep("cluster", V(mst)$name) - 1
+    mst <- minimum.spanning.tree(interactome2, weights = E(interactome2)$weight)
+    mst.cluster.id <- grep("cluster", V(mst)$name)
     names(mst.cluster.id) <- V(mst)[mst.cluster.id]$name
-    mst.cluster.id <- mst.cluster.id[order(as.numeric(matrix(unlist(strsplit(names(mst.cluster.id), 
-        "cluster")), nrow = 2)[2, ]))]
+    mst.cluster.id <- mst.cluster.id[order(as.numeric(matrix(unlist(strsplit(names(mst.cluster.id), "cluster")), nrow = 2)[2, ]))]
     all.ids <- c()
 		# check if multiple clusters exist, 
 		# if they do not exist, assign neg nodes to empty vector that is used later.
@@ -515,36 +506,29 @@ runFastHeinz <- function(network, scores)
 			neg.node.ids.2 = c()
 		}else
 		{
-			for (j in 1:(length(mst.cluster.id) - 1)) {
-					path <- unlist(get.all.shortest.paths(mst, from = mst.cluster.id[j], 
-							to = mst.cluster.id[(j + 1):length(mst.cluster.id)]))
+			for (j in 1:(length(mst.cluster.id)-1)) {
+					path <- unlist(get.all.shortest.paths(mst, from = mst.cluster.id[j], to = mst.cluster.id[(j + 1):length(mst.cluster.id)]))
 					all.ids <- c(all.ids, path)
 			}
 			all.ids <- unique(all.ids)
 			sub.interactome2 <- .subNetwork0(V(mst)[all.ids]$name, interactome2)
-			neg.node.ids <- which(node.score[V(sub.interactome2)$name] < 
-					0) - 1
+			neg.node.ids <- which(node.score[V(sub.interactome2)$name] < 0)
 			for (i in neg.node.ids) {
-					V(sub.interactome2)[i]$clusters <- list(neighbors(sub.interactome2, 
-							v = i)[grep("cluster", V(sub.interactome2)[neighbors(sub.interactome2, 
-							v = i)]$name)])
+					V(sub.interactome2)[i]$clusters <- list(neighbors(sub.interactome2, v = i)[grep("cluster", V(sub.interactome2)[neighbors(sub.interactome2, v = i)]$name)])
 			}
 			score.neg.nodes <- c()
 			for (i in neg.node.ids) {
 					if (!is.na(V(sub.interactome2)[i]$clusters[1])) {
-							score.neg.nodes <- c(score.neg.nodes, sum(node.score[V(sub.interactome2)[c(i, 
-									V(sub.interactome2)[i]$clusters)]$name]))
+						score.neg.nodes <- c(score.neg.nodes, sum(node.score[V(sub.interactome2)[c(i, V(sub.interactome2)[i]$clusters)]$name]))
 					}
 					else {
-							score.neg.nodes <- c(score.neg.nodes, node.score[V(sub.interactome2)[i]$name])
+						score.neg.nodes <- c(score.neg.nodes, node.score[V(sub.interactome2)[i]$name])
 					}
 			}
 			neg.node.ids.2 <- neg.node.ids[score.neg.nodes > 0]
 		}
     if (length(neg.node.ids.2) == 0) {
-        module <- unlist(lapply(conn.comp.graph, get.vertex.attribute, 
-            "name")[as.numeric(matrix(unlist(strsplit(names(node.score.cluster)[which.max(node.score.cluster)], 
-            "cluster")), nrow = 2)[2, ])])
+        module <- unlist(lapply(conn.comp.graph, get.vertex.attribute, "name")[as.numeric(matrix(unlist(strsplit(names(node.score.cluster)[which.max(node.score.cluster)], "cluster")), nrow = 2)[2,])])
         module <- .subNetwork0(module, network)
         if (net.flag) {
 			nE <- ecount(module)
@@ -557,22 +541,20 @@ runFastHeinz <- function(network, scores)
         }
         return(module)
     }
-    subg <- largestComp(subgraph(sub.interactome2, neg.node.ids.2))
+    subg <- largestComp(induced.subgraph(sub.interactome2, neg.node.ids.2))
     mst.subg <- minimum.spanning.tree(subg, E(subg)$weight)
     max.score <- 0
     best.path <- c()
-    for (i in 0:(length(V(mst.subg)) - 1)) {
+    for (i in 1:(length(V(mst.subg)))) {
         path <- get.all.shortest.paths(mst.subg, from = V(mst.subg)[i])
-        path.score <- unlist(lapply(path, .getPathScore, graph1 = mst.subg, 
-            graph2 = sub.interactome2, node.score = node.score))
+        path.score <- unlist(lapply(path$res, .getPathScore, graph1 = mst.subg, graph2 = sub.interactome2, node.score = node.score))
         best.pos <- which.max(path.score)
         if (path.score[[best.pos]] > max.score) {
-            best.path <- path[[best.pos]]
+            best.path <- path$res[[best.pos]]
             max.score <- path.score[[best.pos]]
         }
     }
     if(length(best.path)!=1){
-
       cluster.list <- V(mst.subg)[best.path]$clusters
   	  names.list <- as.character(1:length(cluster.list))
   	  names(cluster.list) <- names.list
@@ -581,20 +563,17 @@ runFastHeinz <- function(network, scores)
       for (i in names.list) {
           res <- lapply(cluster.list, intersect, cluster.list[[i]])
   		  if(length(intersect(unlist(cluster.list[as.character(which(as.numeric(names.list)<as.numeric(i)))]), unlist(cluster.list[as.character(which(as.numeric(names.list)>as.numeric(i)))])))>0){
-  			  if (length(setdiff(res[[i]], unique(unlist(res[-which(names(res)==i)]))))==0){
-  				  cluster.list <- cluster.list[-which(names(cluster.list)==i)]
-  				  names.list <- names.list[-which(names.list==i)]
+  			  if (length(setdiff(res[[i]], unique(unlist(res[names(res)!=i]))))==0){
+  				  cluster.list <- cluster.list[names(cluster.list)!=i]
+  				  names.list <- names.list[names.list!=i]
   			  }
         }
       }
-
       best.path <- best.path[names.list]
     }
     module <- V(mst.subg)[best.path]$name
     pos.cluster <- V(sub.interactome2)[unique(unlist(V(mst.subg)[best.path]$clusters))]$name
-    module <- c(module, unlist(lapply(conn.comp.graph, get.vertex.attribute, 
-        "name")[as.numeric(matrix(unlist(strsplit(pos.cluster, 
-        "cluster")), nrow = 2)[2, ])]))
+    module <- c(module, unlist(lapply(conn.comp.graph, get.vertex.attribute, "name")[as.numeric(matrix(unlist(strsplit(pos.cluster, "cluster")), nrow = 2)[2, ])]))
     module <- .subNetwork0(module, network)
     if (net.flag) {
 		nE <- ecount(module)
