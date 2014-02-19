@@ -1,7 +1,7 @@
 Package: BioNet
 Type: Package
 Title: Routines for the functional analysis of biological networks
-Version: 1.23.2
+Version: 1.23.3
 Date: 2014-02-19
 Author: Marcus Dittrich and Daniela Beisser
 Maintainer: Marcus Dittrich <marcus.dittrich@biozentrum.uni-wuerzburg.de>
@@ -9,7 +9,7 @@ Description: This package provides functions for the integrated analysis of prot
 License: GPL (>= 2)
 Depends: R (>= 2.10.0), Biobase, graph, RBGL
 Suggests: rgl, impute, DLBCL, genefilter, xtable, ALL, limma, hgu95av2.db, XML
-Imports: igraph, AnnotationDbi
+Imports: igraph (>= 0.7), AnnotationDbi
 LazyLoad: yes
 URL: http://bionet.bioapps.biozentrum.uni-wuerzburg.de/
 biocViews: Microarray, DataImport, GraphsAndNetworks, NetworkAnalysis, NetworkEnrichment, GeneExpression, DifferentialExpression 
