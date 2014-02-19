@@ -518,8 +518,8 @@ runFastHeinz <- function(network, scores)
 			}
 			score.neg.nodes <- c()
 			for (i in neg.node.ids) {
-					if (!is.na(V(sub.interactome2)[i]$clusters[1])) {
-						score.neg.nodes <- c(score.neg.nodes, sum(node.score[V(sub.interactome2)[c(i, V(sub.interactome2)[i]$clusters)]$name]))
+					if (!is.na(V(sub.interactome2)[i]$clusters[[1]][1])) {
+						score.neg.nodes <- c(score.neg.nodes, sum(node.score[V(sub.interactome2)[c(i, V(sub.interactome2)[i]$clusters[[1]])]$name]))
 					}
 					else {
 						score.neg.nodes <- c(score.neg.nodes, node.score[V(sub.interactome2)[i]$name])
@@ -555,7 +555,7 @@ runFastHeinz <- function(network, scores)
         }
     }
     if(length(best.path)!=1){
-      cluster.list <- V(mst.subg)[best.path]$clusters
+      cluster.list <- V(mst.subg)[best.path]$clusters[[1]]
   	  names.list <- as.character(1:length(cluster.list))
   	  names(cluster.list) <- names.list
   	  names(best.path) <- names.list
