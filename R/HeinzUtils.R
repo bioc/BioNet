@@ -555,7 +555,7 @@ runFastHeinz <- function(network, scores)
         }
     }
     if(length(best.path)!=1){
-      cluster.list <- V(mst.subg)[best.path]$clusters[[1]]
+      cluster.list <- V(mst.subg)[best.path]$clusters
   	  names.list <- as.character(1:length(cluster.list))
   	  names(cluster.list) <- names.list
   	  names(best.path) <- names.list
