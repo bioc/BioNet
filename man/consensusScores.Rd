@@ -30,7 +30,7 @@ library(DLBCL)
 data(interactome)
 network <- interactome
 # precomputed Heinz modules from pseudo-replicates
-\dontrun{lib <- file.path(.path.package("BioNet"), "extdata") 
+\dontrun{lib <- file.path(path.package("BioNet"), "extdata") 
 modules <- readHeinzGraph(node.file=file.path(datadir, "ALL_n_resample.txt.0.hnz"), network=network)
 cons.scores <- consensusScores(modules, network)
 }
