@@ -35,7 +35,7 @@ Graph with loaded attributes.
 Daniela Beisser
 }
 \examples{
-\dontrun{lib <- file.path(.path.package("BioNet"), "extdata") 
+\dontrun{lib <- file.path(path.package("BioNet"), "extdata") 
 # load interaction file, node attribute file with a node weight of 2 for each node and the edge attribute file with a edge weight of 1 for each edge
 network <- loadNetwork.sif(sif.file=file.path(lib,"cytoscape.sif"), na.file=file.path(lib,"n.weight.NA"), ea.file=file.path(lib,"weight.EA"), format="graphNEL", directed=FALSE);
 network;
