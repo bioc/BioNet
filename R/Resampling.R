@@ -29,7 +29,7 @@ resamplingPvalues <- function(exprMat, groups, alternative = c("two.sided", "les
       jack.mat2 <- t(apply(exprMat, 1, function(x) x[sample(group2, size=size2, replace=FALSE)]))
       if(alternative=="two.sided")
       {
-        require("genefilter")
+        requireNamespace("genefilter")
         jack.p.values <- rowttests(cbind(jack.mat1,jack.mat2), fac=factor(c(rep("A", size1), rep("B", size2))))$p.value
 	names(jack.p.values) <- rownames(exprMat)
       }

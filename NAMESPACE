@@ -1,5 +1,6 @@
 import(igraph)
 import(AnnotationDbi)
+import(Biobase)
 
 # I/O functions
 export(saveNetwork, loadNetwork.sif, loadNetwork.tab) 

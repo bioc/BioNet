@@ -35,7 +35,7 @@ Daniela Beisser
 library(DLBCL)
 data(interactome)
 # precomputed Heinz output files
-\dontrun{lib <- file.path(path.package("BioNet"), "extdata") 
+\dontrun{lib <- file.path(.path.package("BioNet"), "extdata") 
 module <- readHeinzTree(node.file=file.path(lib, "lymphoma_nodes_001.txt.0.hnz"), edge.file=file.path(lib, "lymphoma_edges_001.txt.0.hnz"), network=interactome, format="graphNEL");
 plotModule(module);
 }

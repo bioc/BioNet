@@ -10,6 +10,7 @@
 \usepackage{xspace}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{caption}
+\usepackage{url}
 
 %\VignetteIndexEntry{BioNet Tutorial}
 
@@ -24,6 +25,7 @@
 \author{Daniela Beisser and Marcus Dittrich}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 \maketitle
 
@@ -296,7 +298,7 @@ writeHeinzNodes(network=network, file="lymphoma_nodes_001", node.scores = scores
 
 \subsection{Calculation of the maximum-scoring subnetwork}\label{sec:mss}
 
-In the following the \heinz algorithm is started using the \texttt{heinz.py} python script. 
+In the following the \heinz algorithm is started using the \texttt{heinz.py} python script.\\
 This starts the integer linear programming optimization and calculates the maximum-scoring 
 subnetwork using \texttt{CPLEX}.\\
 
@@ -400,7 +402,7 @@ Since several probesets represent one gene, we have to select one or concatenate
 One possibility is to use the probeset with the highest variance for each gene. This is accomplished for the \texttt{ExpressionSet}
 with the \texttt{mapByVar}. It also maps the Affymetrix IDs to the identifiers of the network using the chip annotations and network geneIDs, 
 which are unique, and returns the network names in the expression matrix. This reduces the expression matrix to the genes which are present 
-in the network.
+in the network. Please note that the number of nodes and edges in the network and resulting module can slightly vary depending on the version of chip annotation used. 
 
 <<>>=
 mapped.eset <- mapByVar(ALL, network=interactome, attr="geneID")
@@ -497,6 +499,8 @@ writeHeinzNodes(network=network, file="ALL_nodes_001", node.scores = scores)
 \subsection{Calculation of the maximum-scoring subnetwork} \label{sec:mss2}
 
 In the following the \heinz algorithm is started using the \texttt{heinz.py} python script. 
+A new implementation Heinz v2.0 is also available at \url{https://software.cwi.nl/software/heinz}
+, with slightly different and additional options.
 This starts the integer linear programming optimization and calculates the maximum-scoring 
 subnetwork using \texttt{CPLEX}.\\
 
@@ -661,9 +665,10 @@ suboptimal solutions and is controlled over a Python script. The dhea code uses 
 CPLEX callable library version 9.030 by ILOG, Inc. (Sunnyvale,CA). 
 In order to calculate the optimal solution a CPLEX library is needed. The other routines, the dhea code and heinz.py Python script (current version 1.63) are
 publicly available for academic and research purposes within the heinz (heaviest induced subgraph) package of the open source library
-LiSA (http://www.planet-lisa.net).
+LiSA (\url{http://www.planet-lisa.net}).
 The dhea code has to be included in the same folder as heinz.py, in order to call the routine by the Python code.
-To calculate the maximum-scoring subnetwork without an available CPLEX license a heuristic is included in the \BioNet package, see \texttt{runFastHeinz}.
+To calculate the maximum-scoring subnetwork without an available CPLEX license a heuristic is included in the \BioNet package, see \texttt{runFastHeinz}.\\
+\textbf{The new version of Heinz v2.0 is available at \url{https://software.cwi.nl/software/heinz}.}
 
 \bibliographystyle{plainnat}
 \bibliography{Tutorials}

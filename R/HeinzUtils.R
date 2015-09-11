@@ -518,7 +518,10 @@ runFastHeinz <- function(network, scores)
 			}
 			score.neg.nodes <- c()
 			for (i in neg.node.ids) {
-					if (!is.na(V(sub.interactome2)[i]$clusters[[1]][1])) {
+			    # >>> FIX !!! Return values were changed from NA to empty vertex set
+			    #if(!is.na(V(sub.interactome2)[i]$clusters[[1]][1]))
+			    # >>> FIX !!!
+			    if (length(V(sub.interactome2)[i]$clusters[[1]])>0) {
 						score.neg.nodes <- c(score.neg.nodes, sum(node.score[V(sub.interactome2)[c(i, V(sub.interactome2)[i]$clusters[[1]])]$name]))
 					}
 					else {

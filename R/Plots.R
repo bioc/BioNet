@@ -170,7 +170,7 @@ plotModule <- function (network, layout = layout.fruchterman.reingold, labels = 
 # Plot the network in 3D
 plot3dModule <- function(network, labels=NULL, windowSize = c(100,100,1500,1000), diff.or.scores=NULL, red=c("negative", "positive"), ...)
 {
-  rgl.loaded <- require(rgl)
+  rgl.loaded <- requireNamespace("rgl")
   if(!rgl.loaded){warnings("Please install rgl package for this plot")}
   else
   {
@@ -253,7 +253,7 @@ plot3dModule <- function(network, labels=NULL, windowSize = c(100,100,1500,1000)
 
 save3dModule <- function(file)
 {
-  require(rgl)
+  requireNamespace("rgl")
   file <- .cleanFile(file)
   rgl.bg(color="white")
   rgl.postscript(filename=paste(file, ".pdf", sep=""), fmt="pdf")
