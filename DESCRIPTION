@@ -1,7 +1,7 @@
 Package: BioNet
 Type: Package
 Title: Routines for the functional analysis of biological networks
-Version: 1.40.0
+Version: 1.41.0
 Date: 2015-09-11
 Author: Marcus Dittrich and Daniela Beisser
 Maintainer: Marcus Dittrich
