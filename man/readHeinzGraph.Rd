@@ -26,7 +26,7 @@ Graph format of output, either \emph{igraph} or \emph{graphNEL}.
 Graph object.
 }
 \author{
-Daniela Beisser
+Daniela Beisser with contributions from Alexey Sergushichev‬
 }
 \examples{
 library(DLBCL)

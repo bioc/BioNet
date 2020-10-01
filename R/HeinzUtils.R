@@ -363,35 +363,28 @@ readHeinzGraph <- function(node.file, network, format=c("graphNEL", "igraph"))
   }
   modules <- list()
   # if only node file
-  nodes <- as.matrix(read.table(file=node.file, skip=1, na.strings="n/a"))
-  for(i in 2:dim(nodes)[2])
+  # nodes <- as.matrix(read.table(file=node.file, skip=1, na.strings="n/a"))
+  nodesTable <- read.table(file=node.file, skip=1, na.strings="n/a")
+  nodesNames <- as.character(nodesTable[,1])
+  nodesMatrix <- as.matrix(nodesTable[,seq.int(2, ncol(nodesTable))])
+  for(i in seq_len(ncol(nodesMatrix)))
   {
-    nodes2 <- nodes
-    if(sum(is.na(as.numeric(nodes2[,i]))) != 0)
-    {
-      nodes2 <- nodes2[!is.na(as.numeric(nodes2[,i])),]
-    }
-    if(!is(nodes2, "vector"))
-    {
+    nodes2 <- nodesMatrix[, i]
+    toKeep <- nodesNames[!is.na(as.numeric(nodes2))]
+    
+    if (length(toKeep) == 0) {
       warning("In at least one result no module found")
       module <- graph.empty(n=0, directed=FALSE)
     }
     else
     {
-      if(!is(nodes2, "matrix"))
-      {
-        module <- .subNetwork0(as.character(nodes2[1]), network)
-      }
-      else
-      {
-        module <- .subNetwork0(as.character(nodes2[,1]), network)
-      }
+      module <- .subNetwork0(toKeep, network)
     }
     if(format == "graphNEL")
     {
       module <- igraph.to.graphNEL(module)
     } 
-    modules[[i-1]] <- module
+    modules[[i]] <- module
   }
   if(length(modules)==1)
   {
@@ -399,6 +392,8 @@ readHeinzGraph <- function(node.file, network, format=c("graphNEL", "igraph"))
   }
   return(modules)      
 }
+
+
 
 # heuristic to get max. scoring subnetwork
 runFastHeinz <- function(network, scores) 
