@@ -26,4 +26,3 @@ LazyLoad: yes
 URL: http://bionet.bioapps.biozentrum.uni-wuerzburg.de/
 biocViews: Microarray, DataImport, GraphAndNetwork, Network,
         NetworkEnrichment, GeneExpression, DifferentialExpression
-PackageStatus: Deprecated
