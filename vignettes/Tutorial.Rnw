@@ -12,7 +12,7 @@
 \usepackage{amssymb}%
 \usepackage{graphicx}
 \usepackage{xspace}
-%\usepackage[numbers,sort&compress]{natbib}
+\usepackage[numbers,sort&compress]{natbib}
 \usepackage{caption}
 \usepackage{url}
 
