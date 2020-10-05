@@ -26,13 +26,13 @@ Graph format of output, either \emph{igraph} or \emph{graphNEL}.
 Graph object.
 }
 \author{
-Daniela Beisser with contributions from Alexey Sergushichev‬
+Daniela Beisser
 }
 \examples{
 library(DLBCL)
 data(interactome)
 # precomputed Heinz output files
-\dontrun{lib <- file.path(.path.package("BioNet"), "extdata") 
+\dontrun{lib <- file.path(path.package("BioNet"), "extdata") 
 module <- readHeinzGraph(node.file=file.path(lib, "lymphoma_nodes_001.txt.0.hnz"), network=interactome, format="graphNEL");
 plotModule(module);
 }

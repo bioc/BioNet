@@ -3,7 +3,7 @@
 
 \usepackage[utf8]{inputenc} 
 
-\newcommand{\obacht}[2][nobody]{\marginpar{\raggedright \tiny \textbf{obacht:} #2 (#1)}}
+%\newcommand{\obacht}[2][nobody]{\marginpar{\raggedright \tiny \textbf{obacht:} #2 (#1)}}
 % *** OFF
 %\newcommand{\obacht}[2]{}
 
@@ -12,7 +12,7 @@
 \usepackage{amssymb}%
 \usepackage{graphicx}
 \usepackage{xspace}
-\usepackage[numbers,sort&compress]{natbib}
+%\usepackage[numbers,sort&compress]{natbib}
 \usepackage{caption}
 \usepackage{url}
 
@@ -665,7 +665,8 @@ http://www.bioconductor.org.
 
 \subsection{External code to call CPLEX}
 The algorithm to identify the optimal scoring subnetwork is based on the software dhea (district heating) from
-\citet{Ljubi'c2006}. The C++ code was extended in order to generate
+%\citet{Ljubi'c2006}. 
+The C++ code was extended in order to generate
 suboptimal solutions and is controlled over a Python script. The dhea code uses the commercial
 CPLEX callable library version 9.030 by ILOG, Inc. (Sunnyvale,CA). 
 In order to calculate the optimal solution a CPLEX library is needed. The other routines, the dhea code and heinz.py Python script (current version 1.63) are
